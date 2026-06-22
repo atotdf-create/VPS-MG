@@ -73,6 +73,15 @@ def init_db():
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS conversation_history (
+                history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                chat_id INTEGER,
+                role TEXT,
+                content TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
         conn.commit()
 
 def add_user(user_id, username, first_name, last_name):
@@ -210,6 +219,24 @@ def delete_reminder(reminder_id):
     with connect_db() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM reminders WHERE reminder_id = ?", (reminder_id,))
+        conn.commit()
+
+def add_history(chat_id, role, content):
+    with connect_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO conversation_history (chat_id, role, content) VALUES (?, ?, ?)", (chat_id, role, content))
+        conn.commit()
+
+def get_history(chat_id, limit=20):
+    with connect_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT role, content FROM conversation_history WHERE chat_id = ? ORDER BY timestamp DESC LIMIT ?", (chat_id, limit))
+        return cursor.fetchall()[::-1]
+
+def clear_history(chat_id):
+    with connect_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM conversation_history WHERE chat_id = ?", (chat_id,))
         conn.commit()
 
 if __name__ == '__main__':

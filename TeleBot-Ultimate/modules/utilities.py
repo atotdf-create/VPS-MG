@@ -1,8 +1,10 @@
-import requests
+import httpx
 from telegram import Update
 from telegram.ext import ContextTypes
 from config import OPENWEATHER_API_KEY
-from googletrans import Translator
+from openai import AsyncOpenAI
+from config import OPENAI_API_KEY
+client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 import operator
 
 async def weather(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -14,7 +16,8 @@ async def weather(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     base_url = "http://api.openweathermap.org/data/2.5/weather?"
     complete_url = f"{base_url}appid={OPENWEATHER_API_KEY}&q={city}&units=metric"
 
-    response = requests.get(complete_url)
+    async with httpx.AsyncClient() as client:
+        response = await client.get(complete_url)
     data = response.json()
 
     if data["cod"] != "404":
@@ -44,10 +47,18 @@ async def translate_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     target_lang = context.args[0]
     text_to_translate = " ".join(context.args[1:])
 
-    translator = Translator()
     try:
-        translated = translator.translate(text_to_translate, dest=target_lang)
-        await update.message.reply_text(f"Translated ({target_lang}): {translated.text}")
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that translates text."},
+                {"role": "user", "content": f"Translate the following text to {target_lang}: {text_to_translate}"}
+            ],
+            max_tokens=500,
+            temperature=0.7,
+        )
+        translated_text = response.choices[0].message.content.strip()
+        await update.message.reply_text(f"Translated ({target_lang}): {translated_text}")
     except Exception as e:
         await update.message.reply_text(f"Translation failed: {e}")
 

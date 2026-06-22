@@ -25,7 +25,7 @@ async def google_search(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             results = data["items"]
             message = "Google Search Results:\n\n"
             for i, item in enumerate(results[:5]): # Limit to 5 results
-                message += f"{i+1}. <a href=\"{item["link"]}\">{item["title"]}</a>\n{item["snippet"]}\n\n"
+                message += f"{i+1}. <a href='{item["link"]}'>{item["title"]}</a>\n{item["snippet"]}\n\n"
             await update.message.reply_text(message, parse_mode="HTML", disable_web_page_preview=True)
         else:
             await update.message.reply_text("No results found for your query.")

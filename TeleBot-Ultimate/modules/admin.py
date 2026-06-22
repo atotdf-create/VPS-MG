@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from database import db
 
-ADMIN_IDS = [YOUR_ADMIN_TELEGRAM_ID] # Replace with your Telegram User ID
+ADMIN_IDS = [] # You can add your Telegram user ID(s) here for initial admin access, e.g., [123456789]
 
 def is_admin(user_id: int) -> bool:
     return user_id in ADMIN_IDS or db.get_user(user_id) and db.get_user(user_id)[4] == 1 # Check if user is in ADMIN_IDS or marked as admin in DB

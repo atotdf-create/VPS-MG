@@ -6,6 +6,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from config import BOT_TOKEN
 from database import db
 from modules import group_management, file_tools, utilities, search, ai_chat, reminders, admin
+from modules.ai_chat import clear_chat_history, inline_query_handler, voice_message_handler, image_message_handler, generate_image_command, summarize_command, execute_code_command
 
 # Enable logging
 logging.basicConfig(
@@ -107,7 +108,14 @@ def main() -> None:
     application.add_handler(CommandHandler("wiki", search.wikipedia_search))
 
     # AI Chat - responds to any text message not handled by other commands
+    application.add_handler(CommandHandler("clear_history", clear_chat_history))
+    application.add_handler(CommandHandler("generate_image", generate_image_command))
+    application.add_handler(CommandHandler("summarize", summarize_command))
+    application.add_handler(CommandHandler("exec_code", execute_code_command))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, ai_chat.ai_chat_reply))
+    application.add_handler(MessageHandler(filters.VOICE, voice_message_handler))
+    application.add_handler(MessageHandler(filters.PHOTO, image_message_handler))
+    application.add_handler(InlineQueryHandler(inline_query_handler))
 
     # Reminders/Notes
     application.add_handler(CommandHandler("remind", reminders.set_reminder))

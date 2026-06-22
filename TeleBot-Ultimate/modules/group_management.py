@@ -145,7 +145,7 @@ async def mute_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await context.bot.restrict_chat_member(
             chat_id,
             target_user.id,
-            permissions=telegram.ChatPermissions(can_send_messages=False),
+            permissions=ChatPermissions(can_send_messages=False),
             until_date=until_date
         )
         db.add_mute(target_user.id, chat_id, admin_id, until_date.isoformat())
@@ -169,7 +169,7 @@ async def unmute_user(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await context.bot.restrict_chat_member(
             chat_id,
             target_user.id,
-            permissions=telegram.ChatPermissions(can_send_messages=True,
+            permissions=ChatPermissions(can_send_messages=True,
                                                 can_send_audios=True,
                                                 can_send_documents=True,
                                                 can_send_photos=True,
