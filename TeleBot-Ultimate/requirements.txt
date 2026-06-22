@@ -1,0 +1,7 @@
+python-telegram-bot==20.8
+python-dotenv
+ytdlp
+openai
+requests
+wikipedia
+googletrans==4.0.0-rc1

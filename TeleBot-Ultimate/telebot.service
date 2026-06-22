@@ -1,0 +1,12 @@
+[Unit]
+Description=Telegram Bot Ultimate
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/TeleBot-Ultimate
+ExecStart=/usr/bin/python3 bot.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

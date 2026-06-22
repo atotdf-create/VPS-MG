@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  telebot:
+    build: .
+    container_name: telebot_ultimate
+    env_file:
+      - .env
+    restart: always
